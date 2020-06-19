@@ -1,11 +1,11 @@
 {
   "name": "binance-live-tracker",
   "version": "1.0.0",
-  "description": "",
+  "description": "Small module for tracking candles, prices, balances and trades on Binance API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Peter",
+  "author": "Peter Iedema",
   "license": "MIT"
 }
