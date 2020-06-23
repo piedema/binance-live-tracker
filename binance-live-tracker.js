@@ -6,7 +6,10 @@ module.exports = () => {
   const options = {
     binance:{},
     spot:{
-      candles:false,
+      candles:{
+        symbols:false,
+        intervals:false
+      },
       prevdays:false,
       ticker:false,
       myBalances:false,
@@ -17,12 +20,13 @@ module.exports = () => {
 
   function init(){
 
-    if(options.spot.candles === '*'){
-      getMarkets(markets => binance.websockets.candlesticks(markets, '1m', (candlestick) => emitData(`spot.candles`, candlestick)))
-    }
+    if(options.spot.candles.intervals === '*') options.spot.candles.intervals = getAllIntervals()
+    if(options.spot.candles.symbols === '*') options.spot.candles.symbols = binance.exchangeInfo((err, res) => res.symbols.map(info => { return info.symbol }))
 
-    if(Array.isArray(options.spot.candles)){
-      binance.websockets.candlesticks(options.spot.candles, '1m', (candlestick) => emitData(`spot.candles`, candlestick))
+    if(options.spot.candles.symbols){
+      options.spot.candles.intervals.forEach(interval => {
+        binance.websockets.candlesticks(options.spot.candles.symbols, interval, (candlestick) => emitData(`spot.candles`, candlestick))
+      })
     }
 
     if(options.spot.prevdays){
@@ -54,6 +58,10 @@ module.exports = () => {
         cb(response.symbols.map(info => { return info.symbol }))
       }
     })
+  }
+
+  function getAllIntervals(){
+    return ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M']
   }
 
   function getExchangeInfo(cb){
